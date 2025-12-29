@@ -7,18 +7,17 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration {
     public function up(): void
     {
-       Schema::create('articles', function (Blueprint $table) {
-    $table->id();
-    $table->string('title');
-    $table->text('content')->nullable();
-    $table->string('url')->unique();
-    $table->dateTime('published_at')->nullable();
-    $table->string('author')->nullable();
-    $table->string('source_id');   // <-- changed from integer to string
-    $table->string('category_id')->nullable(); // <-- changed from integer to string
-    $table->timestamps();
-});
-
+        Schema::create('articles', function (Blueprint $table) {
+            $table->id();
+            $table->string('title');
+            $table->text('content')->nullable();
+            $table->string('url');
+            $table->datetime('published_at');
+            $table->foreignId('source_id')->constrained('sources')->onDelete('cascade');
+            $table->foreignId('category_id')->nullable()->constrained('categories')->onDelete('set null');
+            $table->string('author')->nullable();
+            $table->timestamps();
+        });
     }
 
     public function down(): void
