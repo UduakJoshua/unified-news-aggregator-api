@@ -71,7 +71,6 @@ php artisan migrate
 This will create all the necessary tables in the database.
 
 
-
 ## Author
 
 Uduak Joshua Charlie
