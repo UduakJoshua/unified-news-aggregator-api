@@ -1,7 +1,15 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Services\News\GuardianApiService;
+use App\Services\News\AggregatorService;
 
 Route::get('/', function () {
-    return "Welcome to the Unified News Aggregator API";
+    return view('welcome');
 });
+
+Route::get('/test-guardian', function (AggregatorService $aggregator) {
+    $aggregator->fetchAndStoreGuardian();
+    return 'Guardian articles fetched and stored!';
+});
+
