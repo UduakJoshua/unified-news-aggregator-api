@@ -13,3 +13,9 @@ Route::get('/test-guardian', function (AggregatorService $aggregator) {
     return 'Guardian articles fetched and stored!';
 });
 
+Route::get('/debug/guardian', function (GuardianApiService $service) {
+    return response()->json(
+        $service->fetch()
+    );
+});
+
