@@ -9,33 +9,51 @@ use App\Models\Category;
 class AggregatorService
 {
     protected GuardianApiService $guardianApiService;
+    protected NewsApiService $newsApiService;
     protected ArticleNormalizer $normalizer;
 
     public function __construct(
         GuardianApiService $guardianApiService,
+        NewsApiService $newsApiService,
         ArticleNormalizer $normalizer
     ) {
         $this->guardianApiService = $guardianApiService;
+        $this->newsApiService     = $newsApiService;
         $this->normalizer         = $normalizer;
     }
 
-    /**
-     * Fetch, normalize, and store Guardian articles
-     */
+    /*Fetch, normalize, and store Guardian articles */
     public function fetchAndStoreGuardian(): void
     {
-        // 1. Fetch raw articles
-        $rawArticles = $this->guardianApiService->fetch();
+        $this->fetchNormalizeStore(
+            $this->guardianApiService->fetch(),
+            'guardian',
+            fn($article) => $this->normalizer->fromGuardian($article)
+        );
+    }
 
+    /* Fetch, normalize, and store NewsAPI articles
+     * @param string|null $query Optional search query
+     */
+    public function fetchAndStoreNewsApi(?string $query = null): void
+    {
+        $this->fetchNormalizeStore(
+            $this->newsApiService->fetch($query),
+            'newsapi',
+            fn($article) => $this->normalizer->fromNewsApi($article)
+        );
+    }
+
+    /* Generic helper to normalize and store articles */
+    protected function fetchNormalizeStore(array $rawArticles, string $sourceSlug, callable $normalizerFn): void
+    {
         if (empty($rawArticles)) {
             return;
         }
 
-        // 2. Get source_id from sources table
-        $source = Source::where('slug', 'guardian')->firstOrFail();
+        $source = Source::where('slug', $sourceSlug)->firstOrFail();
         $sourceId = $source->id;
 
-        // 3. Define category mapping (external -> internal)
         $categoryMap = [
             'technology' => 'technology',
             'tech'       => 'technology',
@@ -47,13 +65,11 @@ class AggregatorService
             'health'     => 'health',
         ];
 
-        // 4. Normalize and insert each article
         foreach ($rawArticles as $rawArticle) {
-            $normalized = $this->normalizer->fromGuardian($rawArticle);
+            $normalized = $normalizerFn($rawArticle);
 
-            // Map external category to internal category_id
             $externalCategory = $normalized['category'] ?? null;
-            $internalSlug     = $categoryMap[$externalCategory] ?? null;
+            $internalSlug = $categoryMap[strtolower($externalCategory)] ?? null;
 
             $categoryId = null;
             if ($internalSlug) {
@@ -61,13 +77,11 @@ class AggregatorService
                 $categoryId = $category ? $category->id : null;
             }
 
-            // Merge foreign keys into normalized data
             $articleData = array_merge($normalized, [
                 'source_id'   => $sourceId,
                 'category_id' => $categoryId,
             ]);
 
-            // Insert or update article
             Article::updateOrCreate(
                 ['url' => $articleData['url']],
                 $articleData

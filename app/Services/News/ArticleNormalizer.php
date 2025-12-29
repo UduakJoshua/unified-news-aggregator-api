@@ -19,7 +19,24 @@ class ArticleNormalizer
             'url'          => $article['webUrl'] ?? null,
             'published_at' => $publishedAt,
             'author'       => $article['fields']['byline'] ?? null,
-            'category'     => $article['sectionId'] ?? null, // raw external category
+            'category'     => $article['sectionId'] ?? null, // external category for mapping
+        ];
+    }
+
+    public function fromNewsApi(array $article): array
+    {
+        $publishedAt = $article['publishedAt'] ?? null;
+        if ($publishedAt) {
+            $publishedAt = date('Y-m-d H:i:s', strtotime($publishedAt));
+        }
+
+        return [
+            'title'        => $article['title'] ?? null,
+            'content'      => $article['content'] ?? null,
+            'url'          => $article['url'] ?? null,
+            'published_at' => $publishedAt,
+            'author'       => $article['author'] ?? null,
+            'category'     => $article['category'] ?? null, // external category for mapping
         ];
     }
 }
