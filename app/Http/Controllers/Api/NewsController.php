@@ -4,21 +4,25 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Services\News\GuardianApiService;
+use App\Services\News\NewsApiService;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 
 class NewsController extends Controller
 {
-    protected GuardianApiService $guardianApiService;
-
-    public function __construct(GuardianApiService $guardianApiService)
+   public function fetchGuardian(): JsonResponse
     {
-        $this->guardianApiService = $guardianApiService;
+        $articles = app(GuardianApiService::class)->fetch();
+        return response()->json($articles);
     }
 
-    public function fetchGuardian(): JsonResponse
+    public function fetchNewsApi(Request $request): JsonResponse
     {
-        $articles = $this->guardianApiService->fetch();
-
+        $articles = app(NewsApiService::class)->fetch(
+            $request->query('q', 'technology')
+        );
         return response()->json($articles);
     }
 }
+
+

@@ -44,4 +44,7 @@ Route::get('/ping', function () {
     ]);
 });
 
-Route::get('/news/guardian', [NewsController::class, 'fetchGuardian']);
+Route::prefix('news')->group(function () {
+    Route::get('/guardian', [NewsController::class, 'fetchGuardian']);
+    Route::get('/newsapi', [NewsController::class, 'fetchNewsApi']);
+});

@@ -7,11 +7,11 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Http;
 use App\Models\Source;
 
-class GuardianNewsFeatureTest extends TestCase
+class FetchNewsApiFeatureTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_guardian_news_endpoint_returns_articles(): void
+        public function test_guardian_news_endpoint_returns_articles(): void
         {
             // 1. DB dependency
             Source::create([
@@ -49,5 +49,31 @@ class GuardianNewsFeatureTest extends TestCase
                     ]);
         }
 
+
+        public function test_newsapi_endpoint_returns_articles(): void
+        {
+            config(['services.newsapi.api_key' => 'test-api-key']);
+
+            Source::create([
+                'name'    => 'NewsAPI',
+                'slug'    => 'newsapi',
+                'api_url' => 'https://newsapi.org/v2',
+            ]);
+
+            Http::fake([
+                'https://newsapi.org/v2/everything*' => Http::response([
+                    'articles' => [
+                        [
+                            'title' => 'Test Article',
+                            'url'   => 'https://example.com',
+                        ],
+                    ],
+                ], 200),
+            ]);
+
+            $response = $this->getJson('/api/news/newsapi');
+
+            $response->assertStatus(200);
+        }
 
     }
