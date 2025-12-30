@@ -23,6 +23,7 @@ class ArticleController extends Controller
                 'per_page' => $articles->perPage(),
                 'total'    => $articles->total(),
             ],
+            'message' => $articles->isEmpty() ? 'No articles found.' : null
         ]);
     }
 }

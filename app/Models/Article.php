@@ -34,6 +34,15 @@ class Article extends Model
 
     public function scopeFilter($query, Request $request)
     {
+        $request->validate([
+            'q'        => 'nullable|string|max:255',
+            'category' => 'nullable|string|exists:categories,slug',
+            'source'   => 'nullable|string|exists:sources,slug',
+            'from'     => 'nullable|date',
+            'to'       => 'nullable|date|after_or_equal:from',
+            'per_page' => 'nullable|integer|min:1|max:100',
+        ]);
+
         // Search keyword
         if ($request->filled('q')) {
             $query->where(function ($q) use ($request) {
