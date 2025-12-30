@@ -41,6 +41,6 @@ class GuardianApiService
             return [];
         }
         
-        return $response->json('response.results') ?? [];
+        return $response->json('response.results') ;
     }
 }
