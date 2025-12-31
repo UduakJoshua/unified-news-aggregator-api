@@ -43,6 +43,19 @@ class Article extends Model
             'per_page' => 'nullable|integer|min:1|max:100',
         ]);
 
+        if (
+            !$request->filled('q') &&
+            !$request->filled('category') &&
+            !$request->filled('from')&&
+            !$request->filled('source') &&
+            !$request->filled('to') &&
+            !$request->filled('per_page')
+        ) {
+            return response()->json([
+                'message' => 'At least one search or filter parameter is required',
+            ], 422);
+        }
+
         // Search keyword
         if ($request->filled('q')) {
             $query->where(function ($q) use ($request) {

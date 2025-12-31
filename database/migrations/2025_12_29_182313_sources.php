@@ -11,8 +11,7 @@ return new class extends Migration {
             $table->id();
             $table->string('name');
             $table->string('slug')->unique();
-            $table->string('api_url');
-            $table->string('api_key')->nullable();
+            $table->string('api_url');          
             $table->boolean('active')->default(true);
             $table->timestamps();
         });

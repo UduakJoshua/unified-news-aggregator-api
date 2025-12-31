@@ -5,6 +5,7 @@ use App\Services\News\GuardianApiService;
 use App\Services\News\NewsApiService;
 use App\Services\News\AggregatorService;
 use App\Http\Controllers\ArticleController;
+use App\Http\Controllers\Api\NewsController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -37,3 +38,13 @@ Route::get('/debug/newsapi', function (NewsApiService $service, ?string $query =
 // routing for the endpoint for the frontend to get aggregated news articles
 Route::get('/articles', [ArticleController::class, 'index']);
 
+Route::get('/ping', function () {
+    return response()->json([
+        'message' => 'pong'
+    ]);
+});
+
+Route::prefix('news')->group(function () {
+    Route::get('/guardian', [NewsController::class, 'fetchGuardian']);
+    Route::get('/newsapi', [NewsController::class, 'fetchNewsApi']);
+});
