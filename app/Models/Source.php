@@ -12,8 +12,7 @@ class Source extends Model
     protected $fillable = [
         'name',
         'slug',
-        'api_url',
-        'api_key',
+        'api_url',       
         'active',
     ];
 

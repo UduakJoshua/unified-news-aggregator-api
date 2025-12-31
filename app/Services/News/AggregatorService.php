@@ -22,7 +22,7 @@ class AggregatorService
         $this->normalizer         = $normalizer;
     }
 
-    /*Fetch, normalize, and store Guardian articles */
+    /* Handle Guardian news aggregation */
     public function fetchAndStoreGuardian(): void
     {
         $this->fetchNormalizeStore(
@@ -32,9 +32,7 @@ class AggregatorService
         );
     }
 
-    /* Fetch, normalize, and store NewsAPI articles
-     * @param string|null $query Optional search query
-     */
+    /* Handle NewsAPI news aggregation */
     public function fetchAndStoreNewsApi(?string $query = null): void
     {
         $this->fetchNormalizeStore(
@@ -87,5 +85,12 @@ class AggregatorService
                 $articleData
             );
         }
+    }
+
+    /* Main method to run all aggregations by the job scheduler */
+    public function run(?string $query = null): void
+    {
+        $this->fetchAndStoreGuardian();
+        $this->fetchAndStoreNewsApi($query);
     }
 }
