@@ -1,49 +1,14 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Services\News\GuardianApiService;
-use App\Services\News\NewsApiService;
-use App\Services\News\AggregatorService;
 use App\Http\Controllers\ArticleController;
 use App\Http\Controllers\Api\NewsController;
 
-Route::get('/', function () {
-    return view('welcome');
-});
-
-Route::get('/test-guardian', function (AggregatorService $aggregator) {
-    $aggregator->fetchAndStoreGuardian();
-    return 'Guardian articles fetched and stored!';
-});
-
-Route::get('/test-newsapi', function (AggregatorService $aggregator) {
-        $aggregator->fetchAndStoreNewsApi('technology');
-    return response()->json([
-        'message' => 'NewsAPI articles fetched and stored successfully!'
-    ]);
-});
-
-Route::get('/debug/guardian', function (GuardianApiService $service) {
-    return response()->json(
-        $service->fetch()
-    );
-});
-
-Route::get('/debug/newsapi', function (NewsApiService $service, ?string $query = "technology") {
-    return response()->json(
-        $service->fetch($query)
-    );
-});
 
 // routing for the endpoint for the frontend to get aggregated news articles
 Route::get('/articles', [ArticleController::class, 'index']);
 
-Route::get('/ping', function () {
-    return response()->json([
-        'message' => 'pong'
-    ]);
-});
-
+// API routes for triggering news fetch from different sources for testing purposes
 Route::prefix('news')->group(function () {
     Route::get('/guardian', [NewsController::class, 'fetchGuardian']);
     Route::get('/newsapi', [NewsController::class, 'fetchNewsApi']);
