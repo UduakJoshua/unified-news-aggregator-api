@@ -2,41 +2,47 @@
 
 namespace App\Services\News;
 
+use App\DTO\News\ArticleDTO;
+use DateTimeImmutable;
+
 class ArticleNormalizer
 {
-    /* Normalize a Guardian article to fit into the internal format*/
-
-    public function fromGuardian(array $article): array
+    /**
+     * Normalize any external article into ArticleDTO using a field map
+     *
+     * @param array  $article  Raw article array from the source API
+     * @param string $source   Source name (guardian, newsapi, nyt, etc.)
+     * @param array  $fieldMap Map of DTO fields => API array keys
+     */
+    public function normalize(array $article, string $source, array $fieldMap): ArticleDTO
     {
-        $publishedAt = $article['webPublicationDate'] ?? null;
-        if ($publishedAt) {
-            $publishedAt = date('Y-m-d H:i:s', strtotime($publishedAt));
-        }
+        // Helper function to safely fetch nested keys
+        $get = function (string $dtoKey, $default = null) use ($article, $fieldMap) {
+            $keys = explode('.', $fieldMap[$dtoKey] ?? '');
+            $value = $article;
 
-        return [
-            'title'        => $article['webTitle'] ?? null,
-            'content'      => $article['fields']['bodyText'] ?? null,
-            'url'          => $article['webUrl'] ?? null,
-            'published_at' => $publishedAt,
-            'author'       => $article['fields']['byline'] ?? null,
-            'category'     => $article['sectionId'] ?? null, // external category for mapping
-        ];
-    }
+            foreach ($keys as $key) {
+                if (!is_array($value) || !array_key_exists($key, $value)) {
+                    return $default;
+                }
+                $value = $value[$key];
+            }
 
-    public function fromNewsApi(array $article): array
-    {
-        $publishedAt = $article['publishedAt'] ?? null;
-        if ($publishedAt) {
-            $publishedAt = date('Y-m-d H:i:s', strtotime($publishedAt));
-        }
+            return $value ?? $default;
+        };
 
-        return [
-            'title'        => $article['title'] ?? null,
-            'content'      => $article['content'] ?? null,
-            'url'          => $article['url'] ?? null,
-            'published_at' => $publishedAt,
-            'author'       => $article['author'] ?? null,
-            'category'     => $article['category'] ?? null, // external category for mapping
-        ];
+        $publishedAtRaw = $get('publishedAt');
+        $publishedAt = $publishedAtRaw ? new DateTimeImmutable($publishedAtRaw) : null;
+
+        return new ArticleDTO(
+            externalId: $get('externalId', $get('url')), 
+            title: $get('title'),
+            content: $get('content'),
+            url: $get('url'),
+            author: $get('author'),
+            category: $get('category'),
+            publishedAt: $publishedAt,
+            source: $source
+        );
     }
 }

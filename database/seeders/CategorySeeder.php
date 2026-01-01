@@ -33,11 +33,32 @@ class CategorySeeder extends Seeder
                 'name' => 'Health',
                 'slug' => 'health',
             ],
+
+            [
+                'name' => 'Entertainment',
+                'slug' => 'entertainment',
+            ],
+            [
+                'name' => 'Science',
+                'slug' => 'science',
+            ],
+            [
+                'name' => 'Travel',
+                'slug' => 'travel',
+            ],
+            [
+                'name' => 'Lifestyle',
+                'slug' => 'lifestyle',
+            ],
+            [
+                'name' => 'Education',
+                'slug' => 'education',
+            ],      
         ];
 
         foreach ($categories as $category) {
             Category::updateOrCreate(
-                ['slug' => $category['slug']], // unique identifier
+                ['slug' => $category['slug']], 
                 ['name' => $category['name']]
             );
         }

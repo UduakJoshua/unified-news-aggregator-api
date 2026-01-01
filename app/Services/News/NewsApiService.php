@@ -24,28 +24,52 @@ class NewsApiService
     }
 
     /* Fetch raw articles from NewsAPI @return array */
-    public function fetch(?string $query = null, int $pageSize = 20): array
-    {
-        $params = [
-            'apiKey' => $this->apiKey,
-            'pageSize' => $pageSize,
-        ];
+   public function fetch(?string $query = null, int $pageSize = 20): array
+{
+    $endpoint = $this->baseUrl . '/top-headlines';
 
-        if ($query) {
-            $params['q'] = $query;
-        }
+    $params = [
+        'apiKey' => $this->apiKey,
+        'pageSize' => $pageSize,
+        'language' => 'en',
+        'country' => 'us',  // adjust as needed
+    ];
 
-        $response = Http::get($this->baseUrl . '/everything', $params);
-
-        if ($response->failed()) {
-            Log::error('NewsAPI fetch failed', [
-                'status' => $response->status(),
-                'body' => $response->body(),
-            ]);
-
-            return [];
-        }
-
-        return $response->json('articles') ?? [];
+    if ($query) {
+        $params['q'] = $query;
     }
+
+    $response = Http::get($endpoint, $params);
+
+    if ($response->failed()) {
+        Log::error('NewsAPI fetch failed', [
+            'status' => $response->status(),
+            'body' => $response->body(),
+        ]);
+
+        return [];
+    }
+
+    return $response->json('articles') ?? [];
+}
+
+
+public function getSourceName(): string
+{
+    return 'newsapi';
+}
+
+public function getFieldMap(): array
+{
+    return [
+        'externalId' => 'url',
+        'title'      => 'title',
+        'content'    => 'content',
+        'url'        => 'url',
+        'author'     => 'author',
+        'category'   => 'category',
+        'publishedAt'=> 'publishedAt',
+    ];
+}
+
 }

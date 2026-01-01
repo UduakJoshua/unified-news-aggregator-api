@@ -7,31 +7,38 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use App\Services\News\AggregatorService;
 use Illuminate\Support\Facades\Log;
+
+use App\Services\News\UnifiedNewsFetcher;
+use App\Services\News\AggregatorService;
 
 class RunNewsAggregationJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    // Optional: number of times to retry if job fails
-    public $tries = 3;
+    public int $tries = 3;
+    public int $timeout = 120;
 
-    // Optional: timeout in seconds
-    public $timeout = 120;
+    
+    public function handle(
+        UnifiedNewsFetcher $fetcher,
+        AggregatorService $aggregator
+    ): void 
+        {
+            try {
+                
+                $articles = $fetcher->fetchAll();                
+                $aggregator->store($articles);
 
-    /**
-     * Execute the job.
-     */
-    public function handle(AggregatorService $aggregator)
-    {
-        try {
-            $aggregator->run(); 
-            Log::info('News aggregation completed successfully.');
-        } catch (\Exception $e) {
-            Log::error('News aggregation failed: '.$e->getMessage());
-           
-            throw $e;
-        }
+                Log::info('News aggregation completed successfully.', [
+                    'count' => count($articles),
+                ]);
+            } catch (\Throwable $e) {
+                Log::error('News aggregation failed.', [
+                    'error' => $e->getMessage(),
+                ]);
+
+                throw $e; 
+            }
     }
 }

@@ -17,6 +17,7 @@ class Article extends Model
         'published_at',
         'source_id',
         'category_id',
+        'external_id',
         'author',
     ];
 
@@ -37,24 +38,14 @@ class Article extends Model
         $request->validate([
             'q'        => 'nullable|string|max:255',
             'category' => 'nullable|string|exists:categories,slug',
+            'external_id' => 'nullable|string|exists:articles,external_id',
             'source'   => 'nullable|string|exists:sources,slug',
             'from'     => 'nullable|date',
             'to'       => 'nullable|date|after_or_equal:from',
             'per_page' => 'nullable|integer|min:1|max:100',
         ]);
 
-        if (
-            !$request->filled('q') &&
-            !$request->filled('category') &&
-            !$request->filled('from')&&
-            !$request->filled('source') &&
-            !$request->filled('to') &&
-            !$request->filled('per_page')
-        ) {
-            return response()->json([
-                'message' => 'At least one search or filter parameter is required',
-            ], 422);
-        }
+        
 
         // Search keyword
         if ($request->filled('q')) {

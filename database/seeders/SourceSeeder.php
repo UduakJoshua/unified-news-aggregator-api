@@ -20,7 +20,12 @@ class SourceSeeder extends Seeder
                 'slug' => 'newsapi',
                 'api_url' => 'https://newsapi.org/v2',
             ],
-        ];
+            [
+                'name' => 'New York Times',
+                'slug' => 'nytimes',
+                'api_url' => 'https://api.nytimes.com/svc',
+            ],
+    ];
 
         foreach ($sources as $source) {
             Source::updateOrCreate(
