@@ -15,21 +15,20 @@ class GuardianApiService
     {
         $source = Source::where('slug', 'guardian')->firstOrFail();
 
-        $this->baseUrl = $source->api_url;       
-        $this->apiKey = config('services.guardian.api_key') 
-                    ?? throw new \Exception('Guardian API key is missing.');
+        $this->baseUrl = $source->api_url;
+
+        $this->apiKey = config('services.guardian.api_key')
+            ?? throw new \Exception('Guardian API key is missing.');
     }
 
-    
-    /* Fetch raw articles from Guardian API @return array */
    
     public function fetch(): array
     {
         $response = Http::get($this->baseUrl . '/search', [
-            'api-key'       => $this->apiKey,
-            'show-fields'   => 'bodyText,trailText,byline',
-            'page-size'     => 20,
-            'order-by'      => 'newest',
+            'api-key'     => $this->apiKey,
+            'show-fields' => 'bodyText,trailText,byline',
+            'page-size'   => 20,
+            'order-by'    => 'newest',
         ]);
 
         if ($response->failed()) {
@@ -37,12 +36,30 @@ class GuardianApiService
                 'status' => $response->status(),
                 'body'   => $response->body(),
             ]);
-
             return [];
         }
         
-        return $response->json('response.results') ;
+        return $response->json('response.results') ?? [];
+    }
+
+     
+     
+    public function getSourceName(): string
+    {
+        return 'guardian';
     }
 
     
+    public function getFieldMap(): array
+    {
+        return [
+            'externalId' => 'id',                 
+            'title'      => 'webTitle',
+            'content'    => 'fields.bodyText',    
+            'url'        => 'webUrl',
+            'author'     => 'fields.byline',     
+            'category'   => 'sectionId',
+            'publishedAt'=> 'webPublicationDate',
+        ];
+    }
 }

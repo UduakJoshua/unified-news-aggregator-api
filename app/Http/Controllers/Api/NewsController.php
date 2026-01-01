@@ -10,8 +10,9 @@ use Illuminate\Http\Request;
 
 class NewsController extends Controller
 {
-   public function fetchGuardian(): JsonResponse
+    public function fetchGuardian(): JsonResponse
     {
+        //return response()->json(['message' => 'API is working well']);
         $articles = app(GuardianApiService::class)->fetch();
         return response()->json($articles);
     }
@@ -19,10 +20,8 @@ class NewsController extends Controller
     public function fetchNewsApi(Request $request): JsonResponse
     {
         $articles = app(NewsApiService::class)->fetch(
-            $request->query('q', 'technology')
+            $request->query('q')
         );
         return response()->json($articles);
     }
 }
-
-
