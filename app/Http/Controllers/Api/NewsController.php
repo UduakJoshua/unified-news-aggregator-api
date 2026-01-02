@@ -11,8 +11,7 @@ use Illuminate\Http\Request;
 class NewsController extends Controller
 {
     public function fetchGuardian(): JsonResponse
-    {
-        //return response()->json(['message' => 'API is working well']);
+    {        
         $articles = app(GuardianApiService::class)->fetch();
         return response()->json($articles);
     }

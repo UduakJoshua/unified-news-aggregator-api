@@ -10,7 +10,7 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule)
     {
         // Example: run news aggregation every 30 minutes
-        $schedule->command('news:aggregate-news')->everyThirtyMinutes();
+        $schedule->command('news:aggregate')->everyThirtyMinutes();
     }
 
     protected function commands()

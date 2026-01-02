@@ -16,7 +16,7 @@ class ArticleNormalizer
      */
     public function normalize(array $article, string $source, array $fieldMap): ArticleDTO
     {
-        // Helper function to safely fetch nested keys
+        
         $get = function (string $dtoKey, $default = null) use ($article, $fieldMap) {
             $keys = explode('.', $fieldMap[$dtoKey] ?? '');
             $value = $article;

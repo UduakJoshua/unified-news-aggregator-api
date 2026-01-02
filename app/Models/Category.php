@@ -14,7 +14,7 @@ class Category extends Model
         'slug',
     ];
 
-    /* A category can have many articles*/
+   
     public function articles()
     {
         return $this->hasMany(Article::class);

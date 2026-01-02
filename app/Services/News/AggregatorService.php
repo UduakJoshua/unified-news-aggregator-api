@@ -26,15 +26,15 @@ class AggregatorService
 
     private function storeSingleArticle(ArticleDTO $dto): void
     {
-        // Resolve or create source
+        
         $source = Source::firstOrCreate(
             ['slug' => $dto->source],
             ['name' => ucfirst($dto->source)]
         );
 
-        // Resolve or create category (optional)
+       
         $categoryId = null;
-
+        
         if ($dto->category) {
             $category = Category::firstOrCreate(
                 ['slug' => $dto->category],
