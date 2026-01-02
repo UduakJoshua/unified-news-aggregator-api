@@ -17,16 +17,12 @@ class NewsIngestionController extends Controller
     public function ingest(
         UnifiedNewsFetcher $fetcher,
         AggregatorService $aggregator
-    ): JsonResponse {
-
-        
-        // Fetch articles from all sources using generic fetcher
+    ): JsonResponse {        
+     
         $articles = $fetcher->fetchAll();
-
-        // Persist normalized articles to the database
+      
         $aggregator->store($articles);
-
-        // Return a simple JSON response
+     
         return response()->json([
             'status'  => 'success',
             'message' => 'Articles fetched and stored successfully',

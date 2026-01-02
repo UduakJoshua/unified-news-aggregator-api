@@ -15,7 +15,7 @@ class FetchLog extends Model
         'status',
     ];
 
-    /* FetchLog belongs to a source */
+   
     public function source()
     {
         return $this->belongsTo(Source::class);

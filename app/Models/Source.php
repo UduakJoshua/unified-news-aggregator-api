@@ -16,7 +16,7 @@ class Source extends Model
         'active',
     ];
 
-    /* A Source can have many articles */
+    
     public function articles()
     {
         return $this->hasMany(Article::class);
