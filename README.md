@@ -69,6 +69,7 @@ Create a MySQL database matching your .env configuration. Example using CLI:
 php artisan migrate
 
 This will create all the necessary tables in the database.
+6. Seed the database
 
 
 ## Author
