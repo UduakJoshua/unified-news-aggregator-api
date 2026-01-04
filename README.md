@@ -2,7 +2,7 @@
 
 ## Overview
 
-A Laravel-based backend service that aggregates news articles from multiple external sources (e.g., Guardian API, NewsAPI) and exposes them via a unified API for frontend consumption.
+A Laravel-based backend service that aggregates news articles from multiple external sources (e.g., Guardian API, NewsAPI), normalize them to conform to an internal structure and persist the normalized data and exposes them via a unified API for frontend consumption.
 
 ---
 
