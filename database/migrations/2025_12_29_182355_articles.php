@@ -10,7 +10,7 @@ return new class extends Migration {
         Schema::create('articles', function (Blueprint $table) {
             $table->id();
             $table->string('title');
-            $table->text('content')->nullable();
+            $table->longText('content')->nullable();
             $table->string('url');
             $table->datetime('published_at');
             $table->foreignId('source_id')->constrained('sources')->onDelete('cascade');
