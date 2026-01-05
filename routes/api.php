@@ -12,5 +12,4 @@ Route::get('/articles', [ArticleController::class, 'index']);
 
 /* Meta information routes to expose supported source and categories to the FE*/
 Route::get('/sources', [MetaController::class, 'sources']);
-
 Route::get('/categories', [MetaController::class, 'categories']);
